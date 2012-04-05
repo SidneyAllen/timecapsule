@@ -10,17 +10,28 @@
     <!---
       <script src="js/jquery.parse.js"></script>
      --->
+       <script type="text/javascript" src="http://static.stackmob.com/js/json2-min.js"></script>
+    <script type="text/javascript" src="http://static.stackmob.com/js/underscore-1.3.0-min.js"></script>
+    <script type="text/javascript" src="http://static.stackmob.com/js/backbone-0.5.3-min.js"></script>
      
      <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.1.0.js"></script>
      
      <script type="text/javascript">
-  StackMob.init({
-    appName: "",
-    clientSubdomain: "",
-    dev: true
-  });
-</script>
-     
+  		StackMob.init({
+   			appName: "timecapsule",
+    		clientSubdomain: "crushitmobile",
+    		dev: true
+  		});
+		
+		 //Define your Todo class once on the page
+		  var Capsule = StackMob.Model.extend({
+			schemaName: 'capsule'  //schemaName must be lowercase
+		  });
+		  
+		  
+	</script> 
+    
+   
     <script src="js/persistence.js">
     </script>
     <script src="js/persistence.store.sql.js">
@@ -184,17 +195,37 @@
             
 			    if (validate()) {
                     var capsule = new Object();
-                    capsule.Name = $('#Name').val();
-                    capsule.Email = $('#Email').val();
-                    capsule.Lat = $('#Lat').val();
-                    capsule.Long = $('#Long').val();
-                    capsule.Years = $('#Years').val();
-                    capsule.Message = $('#Message').val();
-                    capsule.Hometown = $('#Hometown').val();
+                    capsule.name = $('#Name').val();
+                    capsule.email = $('#Email').val();
+                    capsule.lat = $('#Lat').val();
+                    capsule.long = $('#Long').val();
+                    capsule.years = $('#Years').val();
+                    capsule.message = $('#Message').val();
+                    capsule.hometown = $('#Hometown').val();
 					
 					console.log(JSON.stringify(capsule));
 					
 					var val = JSON.stringify(capsule);
+					
+					var capsule = new Capsule(capsule);
+					capsule.create({
+					success: function(model) {
+					  //Great Scott! We've saved the task to StackMob!  Let's see what we get back.
+					  console.debug(model.get('name')); //Prints "Go back and save Marty!"
+				 
+					  //StackMob auto generates a unique ID for your object
+					  //after creating it server-side in the format of [schemaName]_id
+					  console.debug('ID is: ' + model.get('capsule_id'));
+				 
+					  //And let's fetch the task from StackMob again AFTER the object has been saved server side for sake of example.
+					  capsule.fetch({
+						success: function(model) {
+						  console.debug(model.toJSON());
+						}
+					  });
+					}
+				});
+					
 					/*
 					$.parse.post('capsule', capsule ,function(json){
 						//task.data('id', json.objectId);
